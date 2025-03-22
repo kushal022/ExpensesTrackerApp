@@ -2,12 +2,14 @@ const express = require('express');
 const userRoute = express.Router();
 
 //Import Controller: 
-const {registerUser,loginUser} = require('../../controllers/usersCtrl/userCtrl');
+const {registerUserCtrl,loginUserCtrl,fetchUsersCtrl} = require('../../controllers/usersCtrl/userCtrl');
 
 // Register User Route:
-userRoute.post('/register', registerUser )
+userRoute.post('/register', registerUserCtrl )
+// Fetch All User Route:
+userRoute.get('/allusers', fetchUsersCtrl )
 
 // Login User Route:
-userRoute.get('/login', loginUser )
+userRoute.post('/login', loginUserCtrl )
 
 module.exports = userRoute;

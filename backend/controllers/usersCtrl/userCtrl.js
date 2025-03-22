@@ -1,20 +1,23 @@
+const expressAsyncHandler = require('express-async-handler'); // for handling errors this is 3rd party package
 //Import Model: 
 const UserModel = require('../../models/usersModel/usersModel');
 
 
-
-const registerUser = async (req,res)=>{
+//todo: ---------------------------------- Register User Controller -----------------------
+const registerUserCtrl = expressAsyncHandler(async (req,res)=>{
     // const {} = req && req.body;  // or
     const {firstName,lastName,email,password} = req?.body; // this is optional chaining
-    try {
+    
         //check if user exists
         const isUserExists = await UserModel.findOne({email:req.body.email});
         if(isUserExists){
-            res.json('user Exist')
+            // res.json('user Exist')
+            throw new Error ('User already exists!!')
         }
-
-        const newUser = await UserModel.create({
-            email, firstName,lastName,password
+        
+        try {
+            const newUser = await UserModel.create({
+            email, firstName,lastName,password,isAdmin:req.body.isAdmin || false
         })
 
         res.status(200).json(newUser)
@@ -23,9 +26,23 @@ const registerUser = async (req,res)=>{
         res.json(error);
         console.log(`Error in Register user`,error)
     }
-};
-const loginUser = (req,res)=>{
+})
+
+//todo: ---------------------------------- Fetch All User Controller -----------------------
+const fetchUsersCtrl = expressAsyncHandler(async (req,res)=>{
+    try {
+        const users = await UserModel.find({});
+        res.json(users);
+    } catch (error) {
+        console.log('not fetch users', error)
+        res.json(error)
+    }
+})
+
+
+//todo: ---------------------------------- Login User Controller -----------------------
+const loginUserCtrl = (req,res)=>{
     res.json('Hello user');
 };
 
-module.exports = {registerUser, loginUser};
+module.exports = {registerUserCtrl, loginUserCtrl, fetchUsersCtrl};
