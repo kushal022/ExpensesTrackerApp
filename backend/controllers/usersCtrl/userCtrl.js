@@ -1,6 +1,8 @@
 const expressAsyncHandler = require('express-async-handler'); // for handling errors this is 3rd party package
 //Import Model: 
 const UserModel = require('../../models/usersModel/usersModel');
+//Import generate Token
+const genToken = require('../../middleware/genToken');
 
 
 //todo: ---------------------------------- Register User Controller -----------------------
@@ -41,8 +43,26 @@ const fetchUsersCtrl = expressAsyncHandler(async (req,res)=>{
 
 
 //todo: ---------------------------------- Login User Controller -----------------------
-const loginUserCtrl = (req,res)=>{
-    res.json('Hello user');
-};
+const loginUserCtrl = expressAsyncHandler(async (req,res)=>{
+    const {email, password} = req?.body;
+    //Find the user in the Database
+    const userFound = await UserModel.findOne({email});
+    //Check password
+    if(userFound && (await userFound?.isPasswordMatch(password))){
+        res.status(200)
+        res.json({
+            _id: userFound?._id,
+            firstName: userFound?.firstName,
+            lastName: userFound?.lastName,
+            email:userFound?.email,
+            isAdmin:userFound?.isAdmin,
+            token: genToken(userFound?._id)
+        })
+    }else{
+        res.status(401);
+        throw new Error('Invalid Login Credentials');
+    }
+
+});
 
 module.exports = {registerUserCtrl, loginUserCtrl, fetchUsersCtrl};

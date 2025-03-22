@@ -11,6 +11,11 @@ const {errorHandler, notFound} = require('./middleware/errorMiddlewares.js')
 //Middleware:
 app.use(express.json())
 
+//Home api:
+app.get('/',(req,res)=>{
+    res.json({'msg': 'Welcome Expense tacker API'})
+})
+
 //import routes:
 const userRoute = require('./routes/users/usersRoute');
 

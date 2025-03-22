@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-//schema
+//todo: ------------------ User schema -----------------------------
 const userSchema = mongoose.Schema({
     firstName :{
         require:[true,"First Name is required"],
@@ -26,7 +26,8 @@ const userSchema = mongoose.Schema({
     
 },{Timestamp:true});
 
-// Hash password
+//todo:-------------------- Hash password --------------------------------
+//change the password before save user
 userSchema.pre('save', async function(next){
     // console.log('Am been Called')
     // console.log(this)
@@ -39,7 +40,13 @@ userSchema.pre('save', async function(next){
     next();
 })
 
-//compile schema into model
+//todo: -------------------------- Verify Password: --------------------------
+userSchema.methods.isPasswordMatch = async function(enteredPassword){
+    return await bcrypt.compare(enteredPassword,this.password);
+
+}
+
+//todo: ----------------- compile schema into model -----------------------
 const UserModel = mongoose.model('User',userSchema);
 
 module.exports = UserModel;
